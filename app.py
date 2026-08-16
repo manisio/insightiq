@@ -13,14 +13,13 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 st.set_page_config(page_title="InsightIQ", page_icon="📊", layout="wide")
 
-# ---------------- Session state defaults ----------------
+
 if "theme" not in st.session_state:
     st.session_state.theme = "dark"
 if "show_splash" not in st.session_state:
     st.session_state.show_splash = True
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []  # list of dicts: question, code, result_type, result_text, error
-if "df" not in st.session_state:
+    st.session_state.chat_history = []  
     st.session_state.df = None
 if "df2" not in st.session_state:
     st.session_state.df2 = None
@@ -28,7 +27,7 @@ if "last_error_question" not in st.session_state:
     st.session_state.last_error_question = None
 
 
-# ---------------- Theme ----------------
+
 def apply_theme(theme):
     if theme == "dark":
         bg, text, card = "#0E1117", "#FAFAFA", "#1A1D24"
@@ -224,7 +223,6 @@ def show_splash_screen():
     """, unsafe_allow_html=True)
 
 
-# ---------------- Helpers ----------------
 def get_schema_info(df):
     schema = f"Dataset has {df.shape[0]} rows and {df.shape[1]} columns.\n"
     schema += "Columns:\n"
@@ -305,7 +303,6 @@ Rules:
     return code
 
 
-# A restricted set of builtins for exec — blocks file/network/system access
 SAFE_BUILTINS = {
     "len": len, "range": range, "sum": sum, "min": min, "max": max,
     "sorted": sorted, "list": list, "dict": dict, "set": set, "tuple": tuple,
@@ -421,7 +418,6 @@ def fig_to_png_bytes(fig):
     return buf
 
 
-# ---------------- App start ----------------
 apply_theme(st.session_state.theme)
 
 if st.session_state.show_splash:
@@ -443,7 +439,6 @@ with top_col2:
         st.session_state.theme = "light" if st.session_state.theme == "dark" else "dark"
         st.rerun()
 
-# ---------------- Sidebar ----------------
 with st.sidebar:
     st.header("⚙️ Settings")
     st.session_state.eda_language = st.radio(
@@ -567,7 +562,7 @@ if df is not None:
         with st.expander("View column details"):
             st.text(get_schema_info(df))
 
-    # ---------------- Auto EDA ----------------
+
     with tabs[1]:
         eda_language = st.radio("Summary language", ["Hinglish", "English"], horizontal=True, key="eda_lang_tab")
         loading_messages = [
@@ -580,11 +575,11 @@ if df is not None:
             eda_summary = generate_auto_eda(get_schema_info(df), df, eda_language)
         st.markdown(eda_summary)
 
-    # ---------------- Ask AI (with chat history) ----------------
+    
     with tabs[2]:
         st.caption("Pichle questions bhi context ke liye AI ko dikhaye jaate hain.")
 
-        # Render chat history
+        
         for h in st.session_state.chat_history:
             st.markdown(f'<div class="chat-bubble-user">🧑 {h["question"]}</div>', unsafe_allow_html=True)
             if h["error"]:
@@ -654,7 +649,7 @@ if df is not None:
             st.session_state.chat_history.append(entry)
             st.rerun()
 
-    # ---------------- Clean Data ----------------
+
     with tabs[3]:
         st.subheader("🧹 Data Cleaning Tools")
         cleaned_df = df.copy()
@@ -720,7 +715,7 @@ if df is not None:
                 st.success("Cleaned data is now active. Switch to other tabs to use it.")
                 st.rerun()
 
-    # ---------------- Compare ----------------
+
     if df2 is not None:
         with tabs[4]:
             st.subheader("⚖️ File 1 vs File 2")
